@@ -620,6 +620,8 @@ class ConnectionManager:
         self.active_connections: Dict[str, WebSocket] = {}
         # Track current processing tasks for each client
         self.current_tasks: Dict[str, Dict[str, asyncio.Task]] = {}
+        # Track persona selection for each client
+        self.client_personas: Dict[str, Optional[str]] = {}
         # Add image manager
         self.image_manager = ImageManager()
         # Track statistics
@@ -634,6 +636,7 @@ class ConnectionManager:
         await websocket.accept()
         self.active_connections[client_id] = websocket
         self.current_tasks[client_id] = {"processing": None, "tts": None}
+        self.client_personas[client_id] = None  # No persona by default
         logger.info(f"Client {client_id} connected")
 
     def disconnect(self, client_id: str):
@@ -641,6 +644,8 @@ class ConnectionManager:
             del self.active_connections[client_id]
         if client_id in self.current_tasks:
             del self.current_tasks[client_id]
+        if client_id in self.client_personas:
+            del self.client_personas[client_id]
         logger.info(f"Client {client_id} disconnected")
 
     async def cancel_current_tasks(self, client_id: str):
@@ -736,6 +741,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include RAG API routers
+from app.api.documents import router as documents_router
+from app.api.personas import router as personas_router
+
+app.include_router(documents_router)
+app.include_router(personas_router)
 
 
 @app.get("/stats")
