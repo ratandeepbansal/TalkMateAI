@@ -30,6 +30,13 @@ dependencies = [
     "fastapi[standard]>=0.115.6",
     "uvicorn>=0.34.3",
     "whisper>=1.1.10",
+    # RAG Dependencies
+    "chromadb>=0.5.0",
+    "sentence-transformers>=3.0.0",
+    "langchain-text-splitters>=0.3.0",
+    "pypdf2>=3.0.0",
+    "python-multipart>=0.0.9",
+    "aiofiles>=24.1.0",
 ]
 
 [project.optional-dependencies]
